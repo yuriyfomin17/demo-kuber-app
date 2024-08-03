@@ -1,0 +1,4 @@
+resources:
+  - redis-db-deployment.yaml
+  - demo-reader-app-deployment.yaml
+  - demo-writer-app-deployment.yaml

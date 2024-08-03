@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-writer-app
+  labels:
+    app: demo-writer-app
+spec:
+  ports:
+    - port: 8081
+  selector:
+    app: demo-writer-app
+    tier: backend
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-writer-app
+  labels:
+    app: demo-writer-app
+spec:
+  selector:
+    matchLabels:
+      app: demo-writer-app
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: demo-writer-app
+        tier: backend
+    spec:
+      containers:
+        - image: 170919972021/demo-writer-app:v1
+          name: demo-writer-app
+          env:
+            - name: REDIS_HOST
+              value: redis-db
+          ports:
+            - containerPort: 8081
+              name: demo-writer-app
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: demo-writer-app
+  labels:
+    app: demo-writer-app
+spec:
+  selector:
+    matchLabels:
+      app: demo-writer-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: demo-writer-app
+        tier: backend
+    spec:
+      containers:
+        - name: demo-writer-app
+          image: 170919972021/demo-writer-app:v1
+          env:
+            - name: REDIS_HOST
+              value: redis-db
+          ports:
+            - containerPort: 8081
+              name: demo-writer-app
+  replicas: 3
+
+

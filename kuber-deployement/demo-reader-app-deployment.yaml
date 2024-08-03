@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-reader-app
+  labels:
+    app: demo-reader-app
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: demo-reader-app
+    tier: backend
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-reader-app
+  labels:
+    app: demo-reader-app
+spec:
+  selector:
+    matchLabels:
+      app: demo-reader-app
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: demo-reader-app
+        tier: backend
+    spec:
+      containers:
+        - image: 170919972021/demo-reader-app:v1
+          name: demo-reader-app
+          env:
+            - name: REDIS_WRITER_URL
+              value: 'http://demo-writer-app:8081'
+          ports:
+            - containerPort: 8080
+              name: demo-reader-app
